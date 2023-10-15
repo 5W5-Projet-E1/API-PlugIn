@@ -18,48 +18,58 @@ function filtre_cours_endpoint($request)
     // Obtenir les paramètres de requête 'session' et 'type'
     $session = $request->get_param('session');
     $type = $request->get_param('type');
+    $page = $request->get_param('page'); // Get the current page number
+    $posts_per_page = $request->get_param('posts_per_page'); // Get the number of posts per page
 
-    // Définir les arguments pour la requête WP_Query
+    // Set default values for page and posts_per_page
+    $page = isset($page) ? $page : 1;
+    $posts_per_page = isset($posts_per_page) ? $posts_per_page : 5; // Set your desired posts per page value
+
+    // Calculate the offset for pagination
+    $offset = ($page - 1) * $posts_per_page;
+
+    // Define the arguments for the WP_Query
     $args = array(
-        'category_name' => 'pagecours', // Slug de la catégorie
-        'posts_per_page' => -1,
+        'category_name' => 'pagecours', // Slug of the category
+        'posts_per_page' => $posts_per_page,
+        'paged' => $page, // Set the current page
+        'offset' => $offset, // Set the offset for pagination
     );
 
-    // Initialisation de la requête de métadonnées
-    // DOCS: https://developer.wordpress.org/reference/classes/wp_meta_query/
+    // Initialize the metadata query
     $meta_query = array('relation' => 'AND');
 
-    // Si le paramètre 'session' est défini, ajouter une clause de métadonnées pour 'session'
+    // If the 'session' parameter is set, add a metadata clause for 'session'
     if ($session) {
         $meta_query[] = array(
-            'key'     => 'session',
-            'value'   => $session,
+            'key' => 'session',
+            'value' => $session,
             'compare' => '=',
-            'type'    => 'NUMERIC',
+            'type' => 'NUMERIC',
         );
     }
 
-    // Si le paramètre 'type' est défini, ajouter une clause de métadonnées pour 'type'
+    // If the 'type' parameter is set, add a metadata clause for 'type'
     if ($type) {
         $meta_query[] = array(
-            'key'     => 'type',
-            'value'   => $type,
+            'key' => 'type',
+            'value' => $type,
             'compare' => '=',
         );
     }
 
-    // Si des clauses de métadonnées sont définies, les ajouter aux arguments de requête
+    // If metadata clauses are defined, add them to the query arguments
     if (!empty($meta_query)) {
         $args['meta_query'] = $meta_query;
     }
 
-    // Exécuter la requête WP_Query
+    // Execute the WP_Query
     $query = new WP_Query($args);
 
-    // Tableau pour stocker les publications
+    // Array to store the posts
     $posts = array();
 
-    // Parcourir les publications trouvées
+    // Iterate through the found posts
     if ($query->have_posts()) {
         while ($query->have_posts()) {
             $query->the_post();
@@ -72,10 +82,22 @@ function filtre_cours_endpoint($request)
         wp_reset_postdata();
     }
 
-    // Convertir le tableau en JSON en supprimant les caractères de contrôle
+    // Convert the array to JSON while removing control characters
     $jsonData = preg_replace('/[[:cntrl:]]/', '', json_encode($posts));
-    return $jsonData;
+    
+    // Include pagination information in the response
+    $response = array(
+        'posts' => json_decode($jsonData),
+        'pagination' => array(
+            'current_page' => $page,
+            'total_pages' => $query->max_num_pages,
+            'posts_per_page' => $posts_per_page,
+        ),
+    );
+
+    return json_encode($response);
 }
+
 
 // Enregistrer le point de terminaison REST
 add_action('rest_api_init', function () {
