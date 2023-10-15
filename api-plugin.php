@@ -1,26 +1,34 @@
 <?php
 
 /**
- * Plugin name: REST API Plugin
+ * Plugin name: Plugin REST API
  * Author: Osama Madi
  * Author URI: https://github.com/osamagmm
- * Description: Plugin pour utiliser le REST API de wordpress
+ * Description: Plugin pour utiliser le REST API de WordPress
  * Version: 1.0.0
  */
 
-// In your theme's functions.php or a custom plugin file, create a custom REST endpoint.
-function custom_class_filter_endpoint($request)
+
+ /**
+  * fonction de rappel personnalisée utilisée dans WordPress pour créer
+  * un point de terminaison d'API REST personnalisé.
+*/
+function filtre_cours_endpoint($request)
 {
+    // Obtenir les paramètres de requête 'session' et 'type'
     $session = $request->get_param('session');
     $type = $request->get_param('type');
 
+    // Définir les arguments pour la requête WP_Query
     $args = array(
-        'category_name' => 'pagecours', // Replace with the slug of your category
+        'category_name' => 'pagecours', // Slug de la catégorie
         'posts_per_page' => -1,
     );
 
+    // Initialisation de la requête de métadonnées
     $meta_query = array('relation' => 'AND');
 
+    // Si le paramètre 'session' est défini, ajouter une clause de métadonnées pour 'session'
     if ($session) {
         $meta_query[] = array(
             'key'     => 'session',
@@ -30,6 +38,7 @@ function custom_class_filter_endpoint($request)
         );
     }
 
+    // Si le paramètre 'type' est défini, ajouter une clause de métadonnées pour 'type'
     if ($type) {
         $meta_query[] = array(
             'key'     => 'type',
@@ -38,14 +47,18 @@ function custom_class_filter_endpoint($request)
         );
     }
 
+    // Si des clauses de métadonnées sont définies, les ajouter aux arguments de requête
     if (!empty($meta_query)) {
         $args['meta_query'] = $meta_query;
     }
 
+    // Exécuter la requête WP_Query
     $query = new WP_Query($args);
 
+    // Tableau pour stocker les publications
     $posts = array();
 
+    // Parcourir les publications trouvées
     if ($query->have_posts()) {
         while ($query->have_posts()) {
             $query->the_post();
@@ -57,38 +70,39 @@ function custom_class_filter_endpoint($request)
         }
         wp_reset_postdata();
     }
-    // $JSONFormatPosts = (json_encode($posts));
-    // var_dump($posts);
-    // $jsonData = json_encode($posts);
-    $jsonData = preg_replace('/[[:cntrl:]]/', '', json_encode($posts));
-    // print_r($jsonData);
 
+    // Convertir le tableau en JSON en supprimant les caractères de contrôle
+    $jsonData = preg_replace('/[[:cntrl:]]/', '', json_encode($posts));
     return $jsonData;
 }
 
+// Enregistrer le point de terminaison REST
 add_action('rest_api_init', function () {
-    register_rest_route('pagecours/v1', '/class-filter', array(
+    register_rest_route('pagecours/', '/class-filter', array(
         'methods' => 'GET',
-        'callback' => 'custom_class_filter_endpoint',
+        'callback' => 'filtre_cours_endpoint',
     ));
 });
 
-
-// Enqueue your CSS and JavaScript
-function enqueue_custom_assets()
+// Enqueue le CSS et le JavaScript
+function enqueue_mes_assets()
 {
-    // Enqueue your CSS
-    wp_enqueue_style(
-        'custom-plugin-style',
-        plugin_dir_url(__FILE__) . 'style.css'
-    );
+    // Assurez-vous que la page actuelle est 'cours' avant d'enregistrer les assets
+    if(is_page('cours')){
+        // CSS
+        wp_enqueue_style(
+            'plugin-style',
+            plugin_dir_url(__FILE__) . 'style.css'
+        );
 
-    // Enqueue your JavaScript
-    wp_enqueue_script(
-        'custom-plugin-script',
-        plugin_dir_url(__FILE__) . 'js/api-plugin.js',
-        true);
+        // JavaScript
+        wp_enqueue_script(
+            'plugin-script',
+            plugin_dir_url(__FILE__) . 'js/api-plugin.js',
+            true
+        );
+    }
 }
 
-// Hook into the 'wp_enqueue_scripts' action
-add_action('wp_enqueue_scripts', 'enqueue_custom_assets');
+// Hook pour enqueue les scripts 'wp_enqueue_scripts'
+add_action('wp_enqueue_scripts', 'enqueue_mes_assets');

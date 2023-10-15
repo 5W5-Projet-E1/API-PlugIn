@@ -1,22 +1,21 @@
-// <!-- Add this JavaScript to your template -->
+// <!-- Ajoutez ce JavaScript à votre modèle -->
 document.addEventListener('DOMContentLoaded', function () {
-    const sessionButtons = document.querySelectorAll('.session-button');
-    const typeButtons = document.querySelectorAll('.type-button');
-    const classContent = document.getElementById('cours-content');
-    const touteButton = document.querySelector('.toute-button');
+    const sessionButtons = document.querySelectorAll('.session-button'); // Boutons de session 1-6
+    const typeButtons = document.querySelectorAll('.type-button'); // Boutons pour le type
+    const touteButton = document.querySelector('.toute-button'); // Bouton pour afficher tout
+    const classContent = document.getElementById('cours-content'); // Où le contenu est ajouté
 
     let session = null;
     let type = null;
 
-    // Function to load all posts from the "cours" category
+    // Fonction pour charger tous les articles de la catégorie "cours"
     function loadAllPosts() {
         session = null
         type = null;
         filterClasses(session, type);
     }
 
-
-    // Event listeners for session buttons
+    // Écouteurs d'événements pour les boutons de session
     sessionButtons.forEach(function (button) {
         button.addEventListener('click', function () {
             session = button.getAttribute('data-session');
@@ -24,11 +23,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // console.log('button clicker')
             // console.log(session)
             // console.log(type)
-
         });
     });
 
-    // Event listeners for type buttons
+    // Écouteurs d'événements pour les boutons de type
     typeButtons.forEach(function (button) {
         button.addEventListener('click', function () {
             type = button.getAttribute('data-type');
@@ -36,31 +34,30 @@ document.addEventListener('DOMContentLoaded', function () {
             // console.log('button clicker 2')
             // console.log(session)
             // console.log(type)
-
         });
     });
-    //Afficher tout les cours
-    touteButton.addEventListener('click', loadAllPosts)
 
+    // Afficher tous les cours
+    touteButton.addEventListener('click', loadAllPosts);
 
     function filterClasses(session, type) {
         if (session === null) {
-            session = ''; // Set the default session value (empty string)
+            session = ''; // Définit la valeur de session par défaut (chaine vide)
         }
         if (type === null) {
-            type = ''; // Set the default type value (empty string)
+            type = ''; // Définit la valeur de type par défaut (chaine vide)
         }
 
-        let url = `http://localhost/weee1/wp-json/pagecours/v1/class-filter?session=${encodeURIComponent(session)}&type=${encodeURIComponent(type)}`;
+        let url = `http://localhost/weee1/wp-json/pagecours/class-filter?session=${encodeURIComponent(session)}&type=${encodeURIComponent(type)}`;
 
-        //let url = `https://gftnth00.mywhc.ca/tim02/cours/wp-json/custom/v1/class-filter?session=${encodeURIComponent(session)}&type=${encodeURIComponent(type)}`;
+        //let url = `https://gftnth00.mywhc.ca/tim02/wp-json/pagecours/class-filter?session=${encodeURIComponent(session)}&type=${encodeURIComponent(type)}`;
 
         fetch(url)
-            .then((response) => response.json()) // Get the response as text
+            .then((response) => response.json()) // Obtenir la réponse comme texte
             .then((data) => {
-                dataJSON = JSON.parse(data)
+                dataJSON = JSON.parse(data);
                 displayClasses(dataJSON);
-            })
+            });
 
         function displayClasses(data) {
             // console.log(data);
@@ -68,20 +65,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (data.length > 0) {
                 data.forEach((classInfo) => {
-                    //On peut changer la structure ici
+                    // Vous pouvez changer la structure ici
                     content += '<li class = "">';
                     content += `<h2>${classInfo.title}</h2>`;
                     content += `<p>${classInfo.content}</p>`;
                     content += '</li>';
                 });
             } else {
-                content = '<p>Aucune classe pour cette option et disponible</p>';
+                content = '<p>Aucun cours pour cette option et disponible</p>';
             }
 
             classContent.innerHTML = content;
         }
     }
 
-    // Load all posts when the page loads
+    // Charger tous les articles lorsque la page se charge
     loadAllPosts();
 });
