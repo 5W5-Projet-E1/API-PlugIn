@@ -4,15 +4,15 @@
  * Plugin name: Plugin REST API
  * Author: Osama Madi
  * Author URI: https://github.com/osamagmm
- * Description: Plugin pour utiliser le REST API de WordPress
+ * Description: Plugin pour utiliser le point de terminaison de l'API REST personnalisé créé à l'aide de cette fonction vous permet d'interroger et de filtrer les publications dans une catégorie spécifique en fonction de divers paramètres, ce qui le rend utile pour créer des requêtes de contenu personnalisées sur votre site WordPress.
  * Version: 1.0.0
  */
 
 
- /**
-  * fonction de rappel personnalisée utilisée dans WordPress pour créer
-  * un point de terminaison d'API REST personnalisé.
-*/
+/**
+ * fonction de rappel personnalisée utilisée dans WordPress pour créer
+ * un point de terminaison d'API REST personnalisé.
+ */
 function filtre_cours_endpoint($request)
 {
     // Obtenir les paramètres de requête 'session' et 'type'
@@ -26,6 +26,7 @@ function filtre_cours_endpoint($request)
     );
 
     // Initialisation de la requête de métadonnées
+    // DOCS: https://developer.wordpress.org/reference/classes/wp_meta_query/
     $meta_query = array('relation' => 'AND');
 
     // Si le paramètre 'session' est défini, ajouter une clause de métadonnées pour 'session'
@@ -88,7 +89,7 @@ add_action('rest_api_init', function () {
 function enqueue_mes_assets()
 {
     // Assurez-vous que la page actuelle est 'cours' avant d'enregistrer les assets
-    if(is_page('cours')){
+    if (is_page('cours')) {
         // CSS
         wp_enqueue_style(
             'plugin-style',
