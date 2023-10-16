@@ -41,15 +41,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Écouteur d'événement pour le bouton de la page suivante
     nextPageButton.addEventListener('click', function () {
-        currentPage++;
-        filterClasses(session, type, currentPage);
+        if (currentPage < 5) {
+            currentPage++;
+            filterClasses(session, type, currentPage);
+            //Reactive le button si cest la page 1
+            prevPageButton.disabled = false
+
+        }
+        //Deactive le button si cest la page 5
+        if (currentPage === 5) {
+            nextPageButton.disabled = true
+        }
+        
     });
 
+    //Deactive le button si cest la page 1
+    prevPageButton.disabled = true
     // Écouteur d'événement pour le bouton de la page précédente
     prevPageButton.addEventListener('click', function () {
         if (currentPage > 1) {
             currentPage--;
             filterClasses(session, type, currentPage);
+        }
+        //Deactive le button si cest la page 5
+        if (currentPage < 5) {
+            nextPageButton.disabled = false
+        }
+        //Reactive le button si cest la page 1
+        if(currentPage === 1){
+            prevPageButton.disabled = true
         }
     });
 
