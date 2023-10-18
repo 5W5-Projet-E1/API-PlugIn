@@ -13,6 +13,7 @@
  * fonction de rappel personnalisée utilisée dans WordPress pour créer
  * un point de terminaison d'API REST personnalisé.
  */
+
 function filtre_cours_endpoint($request)
 {
     // Obtenir les paramètres de requête 'session' et 'type'
@@ -62,6 +63,7 @@ function filtre_cours_endpoint($request)
     if (!empty($meta_query)) {
         $args['meta_query'] = $meta_query;
     }
+
 
     // Execute the WP_Query
     $query = new WP_Query($args);
@@ -129,3 +131,48 @@ function enqueue_mes_assets()
 
 // Hook pour enqueue les scripts 'wp_enqueue_scripts'
 add_action('wp_enqueue_scripts', 'enqueue_mes_assets');
+
+
+function plugin_settings_page() {
+    // Get the user-defined ACF fields from the options table
+    $acf_fields = get_option('acf_fields');
+    $acf_fields_array = explode(',', $acf_fields);
+
+    ?>
+    <div class="wrap">
+        <h2>Plugin Settings</h2>
+        <form method="post" action="">
+            <label for="acf_fields">ACF Fields to Use for Filtering (comma-separated):</label>
+            <input type="text" id="acf_fields" name="acf_fields" value="<?php echo esc_attr(get_option('acf_fields')); ?>">
+            <br>
+            <div class="selected-acf-fields">
+                <?php
+                // Display the selected ACF fields
+                foreach ($acf_fields_array as $acf_field) {
+                    echo '<div class="selected-acf-field">' . esc_html($acf_field) . '</div>';
+                }
+                ?>
+            </div>
+            <input type="submit" name="save_settings" class="button button-primary" value="Save Settings">
+        </form>
+    </div>
+    <?php
+}
+
+
+
+
+function process_form_data() {
+    if (isset($_POST['save_settings'])) {
+        $acf_fields = sanitize_text_field($_POST['acf_fields']);
+        update_option('acf_fields', $acf_fields);
+    }
+}
+
+
+function register_plugin_menu() {
+    add_menu_page('REST PLUGIN', 'REST PLUGIN', 'manage_options', 'plugin-settings', 'plugin_settings_page');
+}
+
+add_action('admin_menu', 'register_plugin_menu');
+add_action('admin_init', 'process_form_data');

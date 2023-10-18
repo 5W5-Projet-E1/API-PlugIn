@@ -44,8 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (currentPage < 5) {
             currentPage++;
             filterClasses(session, type, currentPage);
-            //Reactive le button si cest la page 1
-            prevPageButton.disabled = false
+            prevPageButton.disabled = false;
 
         }
         //Deactive le button si cest la page 5
