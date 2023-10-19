@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         // Optionally, you can show a success message to the user
                         console.log('ACF fields saved successfully:', acfFieldsString);
+                        sendAPIRequest(acfFieldsArray);
                     } else {
                         // Handle the case when acfFieldsString is empty
                         console.log('No ACF fields saved.');
@@ -52,4 +53,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Fetch error:', error);
             });
     });
+
+
+    function sendAPIRequest(acfFieldsArray) {
+        // Create the ACF fields string in the format "field1:value1,field2:value2"
+        const acfFieldsString = acfFieldsArray.join(',');
+
+        // Construct the correct URL
+        
+        const apiUrl = `/weee1/wp-json/pagecours/class-filter?acf_fields=${acfFieldsString}&page=1`;
+        // Include code to send the API request with the constructed URL
+        console.log(apiUrl);
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                // Handle the API response as needed
+                console.log('API Response:', data);
+            })
+            .catch(error => {
+                // Handle API request errors, if any
+                console.error('API Request Error:', error);
+            });
+    }
+    
+    
+    
 });

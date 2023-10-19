@@ -19,11 +19,11 @@ function filtre_cours_endpoint($request)
     // Set default values for page and posts_per_page
     $page = $request->get_param('page'); // Get the current page number
     $posts_per_page = $request->get_param('posts_per_page'); // Get the number of posts per page
-    
+
     // Get the ACF fields parameter
     $acf_fields = $request->get_param('acf_fields');
     $page = $request->get_param('page'); // Get the current page number
-    
+
     // Set default values for page
     $page = isset($page) ? $page : 1;
     $posts_per_page = isset($posts_per_page) ? $posts_per_page : 5; // Set your desired posts per page value
@@ -56,8 +56,6 @@ function filtre_cours_endpoint($request)
 
         // Add the metadata clauses to the query arguments
         $args['meta_query'] = $meta_query;
-
-        
     }
 
 
@@ -122,6 +120,11 @@ function enqueue_mes_assets()
             plugin_dir_url(__FILE__) . 'js/frontend.js',
             true,
         );
+
+        // Provide the AJAX URL to the JavaScript
+        wp_localize_script('plugin-script', 'customData', array(
+            'ajax_url' => admin_url('admin-ajax.php')
+        ));
     }
 }
 
@@ -188,7 +191,7 @@ function save_acf_fields()
         $response['error'] = 'Invalid ACF fields data.';
     }
 
-    
+
     echo json_encode($response);
     wp_die();
 }
@@ -196,6 +199,20 @@ function save_acf_fields()
 add_action('wp_ajax_get_acf_fields', 'get_acf_fields');
 
 
+
+add_action('wp_ajax_get_acf_field_name', 'get_acf_field_name');
+add_action('wp_ajax_nopriv_get_acf_field_name', 'get_acf_field_name');
+
+function get_acf_field_name()
+{
+    $acf_field_name = get_option('acf_fields');
+
+    $response = array(
+        'acf_field_name' => $acf_field_name,
+    );
+
+    wp_send_json($response);
+}
 
 
 // function process_form_data()
