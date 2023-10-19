@@ -215,14 +215,6 @@ function get_acf_field_name()
 }
 
 
-// function process_form_data()
-// {
-//     if (isset($_POST['save_settings'])) {
-//         $acf_fields = sanitize_text_field($_POST['acf_fields']);
-//         update_option('acf_fields', $acf_fields);
-//     }
-// }
-
 
 function register_plugin_menu()
 {
@@ -230,4 +222,3 @@ function register_plugin_menu()
 }
 
 add_action('admin_menu', 'register_plugin_menu');
-// add_action('admin_init', 'process_form_data');
