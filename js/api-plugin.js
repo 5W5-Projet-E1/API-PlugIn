@@ -1,43 +1,38 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const sessionButtons = document.querySelectorAll('.session-button'); // Boutons de session 1-6
-    const typeButtons = document.querySelectorAll('.type-button'); // Boutons pour le type
-    const touteButton = document.querySelector('.toute-button'); // Bouton pour afficher tout
+    const acfFieldsInput = document.getElementById('acf_fields'); // Input for user-defined ACF fields
+    const acfFieldButtons = document.querySelectorAll('.acf-field-button'); // Buttons for ACF field values
+    const touteButton = document.getElementById('toute-button');
     const classContent = document.getElementById('cours-content'); // Où le contenu est ajouté
     const nextPageButton = document.querySelector('.next-page'); // Bouton pour la page suivante
     const prevPageButton = document.querySelector('.prev-page'); // Bouton pour la page précédente
 
-    let session = null;
-    let type = null;
+    let acfFields = null; // Initialize user-defined ACF fields
     let currentPage = 1;
 
     // Fonction pour charger tous les articles de la catégorie "cours"
     function loadAllPosts() {
-        session = null;
-        type = null;
+        acfFields = acfFieldsInput.value;
         currentPage = 1;
-        filterClasses(session, type, currentPage);
+        filterClasses(acfFields, currentPage);
     }
 
-    // Écouteurs d'événements pour les boutons de session
-    sessionButtons.forEach(function (button) {
+    // Add event listeners for ACF field buttons
+    acfFieldButtons.forEach(function (button) {
         button.addEventListener('click', function () {
-            session = button.getAttribute('data-session');
+            const selectedAcfField = button.getAttribute('data-acf-field');
+            acfFields = selectedAcfField;
             currentPage = 1;
-            filterClasses(session, type, currentPage);
+            filterClasses(acfFields, currentPage);
         });
     });
 
-    // Écouteurs d'événements pour les boutons de type
-    typeButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-            type = button.getAttribute('data-type');
-            currentPage = 1;
-            filterClasses(session, type, currentPage);
-        });
+    touteButton.addEventListener('click', function () {
+        // Clear the ACF fields input and load all posts
+        acfFieldsInput.value = '';
+        acfFields = '';
+        currentPage = 1;
+        filterClasses(acfFields, currentPage);
     });
-
-    // Afficher tous les cours
-    touteButton.addEventListener('click', loadAllPosts);
 
     // Écouteur d'événement pour le bouton de la page suivante
     nextPageButton.addEventListener('click', function () {
