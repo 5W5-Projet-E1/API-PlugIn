@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Append the page parameter to the query parameters
         queryParams.append('page', page);
-
+        console.log(queryParams.toString());
         // Construct the URL with query parameters
         let url = `http://localhost/weee1/wp-json/pagecours/class-filter?${queryParams.toString()}`;
 

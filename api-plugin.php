@@ -16,7 +16,6 @@
 
 function filtre_cours_endpoint($request)
 {
-
     // Set default values for page and posts_per_page
     $page = $request->get_param('page'); // Get the current page number
     $posts_per_page = $request->get_param('posts_per_page'); // Get the number of posts per page
@@ -57,6 +56,8 @@ function filtre_cours_endpoint($request)
 
         // Add the metadata clauses to the query arguments
         $args['meta_query'] = $meta_query;
+
+        
     }
 
 
@@ -187,9 +188,13 @@ function save_acf_fields()
         $response['error'] = 'Invalid ACF fields data.';
     }
 
+    
     echo json_encode($response);
     wp_die();
 }
+
+add_action('wp_ajax_get_acf_fields', 'get_acf_fields');
+
 
 
 
