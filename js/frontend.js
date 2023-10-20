@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
 
-    let currentPage = 1;
 
     // Function to load all posts
     function loadAllPosts() {
@@ -73,35 +72,32 @@ document.addEventListener('DOMContentLoaded', function () {
         filterClasses(acfFieldsArray, currentPage);
     });
 
+    let currentPage = 1;
+
+    // Function to update pagination buttons
+    function updatePaginationButtons(dataJSON) {
+        if (dataJSON.pagination.total_pages === 0) {
+            //ON PEUT RENDRE CA MIEU POUR LE UX 
+            prevPageButton.disabled = true;
+            nextPageButton.disabled = true;
+        } else {
+            prevPageButton.disabled = currentPage === 1;
+            nextPageButton.disabled = currentPage === dataJSON.pagination.total_pages;
+        }    }
+
     nextPageButton.addEventListener('click', function () {
-        if (currentPage < 5) {
+        if (currentPage < dataJSON.pagination.total_pages) {
             currentPage++;
             filterClasses(acfFieldsArray, currentPage);
-            prevPageButton.disabled = false;
-        }
-
-        if (currentPage === 5) {
-            nextPageButton.disabled = true;
         }
     });
-
-    prevPageButton.disabled = true;
 
     prevPageButton.addEventListener('click', function () {
         if (currentPage > 1) {
             currentPage--;
             filterClasses(acfFieldsArray, currentPage);
         }
-
-        if (currentPage < 5) {
-            nextPageButton.disabled = false;
-        }
-
-        if (currentPage === 1) {
-            prevPageButton.disabled = true;
-        }
     });
-
 
     function buildURL(acfFieldsArray, page) {
         // Create an object to hold the query parameters
@@ -133,9 +129,10 @@ document.addEventListener('DOMContentLoaded', function () {
             .then((response) => response.json())
             .then((data) => {
                 dataJSON = JSON.parse(data);
+                console.log(dataJSON);
+                updatePaginationButtons(dataJSON)
                 displayClasses(dataJSON);
             });
-        // console.log(url);
     }
 
 
