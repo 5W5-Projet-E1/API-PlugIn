@@ -5,15 +5,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const selectedAcfFieldsContainer = document.querySelector('.selected-acf-fields');
 
     saveSettingsButton.addEventListener('click', function (event) {
-        event.preventDefault();
+        event.preventDefault(); //Prevent le reload de la page 
 
         const acfFields = acfFieldsInput.value; // Ensure that it's a string
 
+
+        // Combine les informations que l'utilisateur à input
         const data = new FormData(acfFieldsForm);
         data.append('action', 'save_acf_fields');
         data.append('acf_fields', acfFields);
         console.log(acfFields);
 
+        //Faire un requête pour envoyer l'info à la DB
         fetch(ajaxurl, {
             method: 'POST',
             body: data,
@@ -21,13 +24,13 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Update UI with the saved ACF fields
-                    selectedAcfFieldsContainer.innerHTML = ''; // Clear previous content
+                    // Update l'UI avec les ACF fields sauvegardé
+                    selectedAcfFieldsContainer.innerHTML = ''; // Vidé les vielles donné 
 
-                    const acfFieldsString = acfFields.trim(); // Ensure it's a string and remove extra spaces
+                    const acfFieldsString = acfFields.trim(); // S'assurer que c'est un string
 
                     if (acfFieldsString) {
-                        const acfFieldsArray = acfFieldsString.split(','); // Split into an array if needed
+                        const acfFieldsArray = acfFieldsString.split(','); // Faire une array si nécessaire
 
                         acfFieldsArray.forEach(acfField => {
                             const div = document.createElement('div');
@@ -36,15 +39,14 @@ document.addEventListener('DOMContentLoaded', function () {
                             selectedAcfFieldsContainer.appendChild(div);
                         });
 
-                        // Optionally, you can show a success message to the user
-                        console.log('ACF fields saved successfully:', acfFieldsString);
+                        console.log('Vos ACF fields on été sauvegardé:', acfFieldsString);
                     } else {
                         // Handle the case when acfFieldsString is empty
-                        console.log('No ACF fields saved.');
+                        console.log('Aucun ACF fields à été sauvegardé');
                     }
                 } else {
                     // Handle errors if needed
-                    console.error('Failed to save ACF fields:', data.error);
+                    console.error('Erreur lors de la sauvegarde des ACF fields:', data.error);
                 }
             })
             .catch(error => {

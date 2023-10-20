@@ -8,73 +8,66 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let acfFieldsArray = [];
 
-    // Make an AJAX request to retrieve the ACF field name
+    // Faire une requête AJAX  pour récuperer le nom des ACF fields
     fetch(customData.ajax_url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'action=get_acf_field_name', // Custom action to retrieve the ACF field name
+        body: 'action=get_acf_field_name', // Action custom pour récuperer les noms des ACF field
     })
         .then(response => response.json())
         .then(data => {
-            // Set the ACF field name in your JavaScript variable
+            // Set le nom des ACF field dans la variable "acfFields"
             acfFields = data.acf_field_name;
-            acfFieldsArray = acfFields.split(','); // Split the string into an array
-            console.log('gcuhfiuviu', acfFields);
-
-            // Log the array
-            console.log('ACF Fields:', acfFieldsArray);
+            acfFieldsArray = acfFields.split(','); // Diviser le string en une array
         })
         .catch(error => {
-            console.error('Error fetching ACF field name:', error);
+            console.error('Erreur lors du fetching des ACF field name:', error);
         });
 
 
 
-    // Function to load all posts
-    function loadAllPosts() {
+    // Function pour chercher tout les posts
+    function loadToutLesPosts() {
         acfFields = [];
         currentPage = 1;
-        filterClasses(acfFields, currentPage);
+        filterPosts(acfFields, currentPage);
     }
 
-    // Add event listeners for ACF field buttons
+    // Ajouter event listeners pour les buttons ACF field 
     acfFieldButtons.forEach(function (button) {
         button.addEventListener('click', function () {
 
             const selectedAcfField = button.getAttribute('data-acf-field');
 
-            // Split the selected ACF field into its name and value
-            const [acfFieldName, acfFieldValue] = selectedAcfField.split(':');
+            // Diviser le field choisie par le webPageUser en nom et sa valeur
+            const [nomAcfField, valeurAcfField] = selectedAcfField.split(':');
 
-            // Check if the ACF field name already exists in the array
-            const index = acfFieldsArray.findIndex(field => field.startsWith(acfFieldName));
+            // Check si le field name existe déja dans l'array
+            const index = acfFieldsArray.findIndex(field => field.startsWith(nomAcfField));
 
             if (index === -1) {
-                // If not in the array, add it
+                // Si pas dans l'array on ajoute
                 acfFieldsArray.push(selectedAcfField);
             } else {
-                // If already in the array, update the value
-                acfFieldsArray[index] = acfFieldName + ':' + acfFieldValue;
+                // Si dans l'array on update le nom
+                acfFieldsArray[index] = nomAcfField + ':' + valeurAcfField;
             }
-
-            // Log the updated array for testing
-            console.log('Updated ACF Fields Array:', acfFieldsArray);
             currentPage = 1;
-            filterClasses(acfFieldsArray, currentPage);
+            filterPosts(acfFieldsArray, currentPage);
         });
     });
 
     touteButton.addEventListener('click', function () {
-        acfFieldsArray = []; // Set acfFields to an empty string
+        acfFieldsArray = []; // Set acfFields en string vide
         currentPage = 1;
-        filterClasses(acfFieldsArray, currentPage);
+        filterPosts(acfFieldsArray, currentPage);
     });
 
     let currentPage = 1;
 
-    // Function to update pagination buttons
+    // Function pour update les buttons de paginations 
     function updatePaginationButtons(dataJSON) {
         if (dataJSON.pagination.total_pages === 0) {
             //ON PEUT RENDRE CA MIEU POUR LE UX 
@@ -83,63 +76,63 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             prevPageButton.disabled = currentPage === 1;
             nextPageButton.disabled = currentPage === dataJSON.pagination.total_pages;
-        }    }
+        }
+    }
 
     nextPageButton.addEventListener('click', function () {
         if (currentPage < dataJSON.pagination.total_pages) {
             currentPage++;
-            filterClasses(acfFieldsArray, currentPage);
+            filterPosts(acfFieldsArray, currentPage);
         }
     });
 
     prevPageButton.addEventListener('click', function () {
         if (currentPage > 1) {
             currentPage--;
-            filterClasses(acfFieldsArray, currentPage);
+            filterPosts(acfFieldsArray, currentPage);
         }
     });
 
+
+    /**
+     * Fonction pour construire un url avec les informations donner par le WebPageUser
+     * @param {Array} acfFieldsArray 
+     * @param {Number} page 
+     * @returns Un url construit avec les params du WebPageUser
+     */
     function buildURL(acfFieldsArray, page) {
-        // Create an object to hold the query parameters
-        const queryParams = new URLSearchParams();
-        // Iterate over the ACF fields in the array
-        const acfFieldString = acfFieldsArray.join(',');
-        // Replace ampersands with commas
-        const formattedACFFields = acfFieldString.replace(/&/g, ',');
-        // Append the formatted ACF fields to the query parameters
-        queryParams.append('acf_fields', formattedACFFields);
-        // Append the page parameter to the query parameters
-        queryParams.append('page', page);
-        // Construct the URL with query parameters
+        const queryParams = new URLSearchParams(); // Créer un objet pour les params de la query
+        const acfFieldString = acfFieldsArray.join(','); // Itérere à traver les ACF fields dans l'array
+        const formattedACFFields = acfFieldString.replace(/&/g, ',');// Remplacer les "$" par une virgule ","
+        queryParams.append('acf_fields', formattedACFFields);// Ajouter les ACF fields formtatés au param de la query
+        queryParams.append('page', page);// Ajouter le param page au param de la query
+        // Construire l'URL avec les nouveaus query parameters
         const url = `http://localhost/weee1/wp-json/pagecours/class-filter?${queryParams.toString()}`;
         return url;
     }
 
-
-
-
-    function filterClasses(acfFieldsArray, page) {
-
+    /**
+     * Fonction pour fetche et filtrer les classes avec les params donné par le WebPageUser
+     * @param {Array} acfFieldsArray 
+     * @param {Number} page 
+     */
+    function filterPosts(acfFieldsArray, page) {
         const url = buildURL(acfFieldsArray, page);
-        console.log('Constructed URL:', url);
-
-        //let url = `http://localhost/weee1/wp-json/pagecours/class-filter?acf_fields=${encodeURIComponent(acfFields)}&page=${page}`;
-
         fetch(url)
             .then((response) => response.json())
             .then((data) => {
                 dataJSON = JSON.parse(data);
-                console.log(dataJSON);
                 updatePaginationButtons(dataJSON)
-                displayClasses(dataJSON);
+                displayPosts(dataJSON);
             });
     }
 
-
-
-    function displayClasses(data) {
+    /**
+    * Fonction pour display les posts filtrés
+    * @param {JSON} data 
+    */
+    function displayPosts(data) {
         let content = '';
-        // console.log(data);
 
         if (data.posts.length > 0) {
             data.posts.forEach((classInfo) => {
@@ -154,6 +147,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         classContent.innerHTML = content;
     }
-
-    loadAllPosts();
+    //On load tout les posts au début
+    loadToutLesPosts();
 });
