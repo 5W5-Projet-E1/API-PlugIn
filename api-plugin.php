@@ -163,22 +163,25 @@ function filtre_acf_page()
     <div class="wrap">
         <h2>Paramètre</h2>
         <form method="post" action="" id="param-form">
+            <h2>Les ACF fields que vous filtrer</h2>
             <label for="acf_fields">Entrer les ACF fields que vous voulez utiliser pour filtrer (séparé par des virgules ","):</label>
             <input type="text" id="acf_fields" name="acf_fields" value="<?php echo esc_attr(get_option('acf_fields')); ?>" required>
-            <br>
+            
             <div class="selected-acf-fields">
                 <?php
                 // Display les ACF fields que l'admin à déterminé
                 foreach ($acf_fields_array as $acf_field) {
-                    echo '<div class="selected-acf-field">' . esc_html($acf_field) . '</div>';
+                    echo '<li class="selected-acf-field">' . esc_html($acf_field) . '</li>';
                 }
                 ?>
             </div>
 
-            <label for="cat_value">Entrer la catégorie dans laquelle vous voulez filter:</label>
+            <div class="selected-category">
+            <h2>Le slug de la catégorie que vous voulez filtrer</h2>
+            
+            <label for="cat_value">Entrer le slug de la catégorie:</label>
             <input type="text" id="cat_value" name="cat_value" value="<?php echo esc_attr(get_option('cat_value')); ?>" required>
 
-            <div class="selected-category">
                 <ul>
                     <li class="selected-category-li"><?= esc_html($cat_value) ?></li>
                 </ul>

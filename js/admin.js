@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const acfFieldsInput = document.getElementById('acf_fields');
     const saveSettingsButton = document.getElementById('save-settings-button');
     const selectedAcfFieldsContainer = document.querySelector('.selected-acf-fields');
+    const selectedCategoryContainer = document.querySelector('.selected-category');
     const selectedCategoryLi = document.querySelector('.selected-category-li');
     const categoryInput = document.getElementById('cat_value');
 
@@ -51,10 +52,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         const acfFieldsArray = acfFieldsString.split(','); // Faire une array si nécessaire
 
                         acfFieldsArray.forEach(acfField => {
-                            const div = document.createElement('div');
-                            div.className = 'selected-acf-field';
-                            div.textContent = acfField.trim();
-                            selectedAcfFieldsContainer.appendChild(div);
+                            const li = document.createElement('li');
+                            li.className = 'selected-acf-field';
+                            li.textContent = acfField.trim();
+                            selectedAcfFieldsContainer.appendChild(li);
                         });
 
                         //Gestion de la selection de categorie
