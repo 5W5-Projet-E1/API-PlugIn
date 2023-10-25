@@ -31,7 +31,7 @@ function filtre_acf_endpoint($request)
     // Définir les args pour la WP_query
     $args = array(
         // Slug de la categorie dans laquelle on veut filtrer ** Devrait être set dynamique par le plugin user
-        'category_name' => 'pagecours', 
+        'category_name' => 'pagecours',
         'posts_per_page' => $posts_per_page, // Retrieve all posts
         'paged' => $page, // Set the current page
     );
@@ -154,16 +154,17 @@ add_action('admin_enqueue_scripts', 'enqueue_admin_script');
 
 function filtre_acf_page()
 {
-    // Chercher les ACF fields par l'utilisateur du plugin dans la table option
+    // Chercher les ACF fields par l'utilisateur du plugin dans la table option dans la DB!
     $acf_fields = get_option('acf_fields');
     $acf_fields_array = explode(',', $acf_fields);
+    $cat_value = get_option('cat_value');
 
 ?>
     <div class="wrap">
         <h2>Paramètre</h2>
-        <form method="post" action="" id="acf-fields-form">
+        <form method="post" action="" id="param-form">
             <label for="acf_fields">Entrer les ACF fields que vous voulez utiliser pour filtrer (séparé par des virgules ","):</label>
-            <input type="text" id="acf_fields" name="acf_fields" value="<?php echo esc_attr(get_option('acf_fields')); ?>">
+            <input type="text" id="acf_fields" name="acf_fields" value="<?php echo esc_attr(get_option('acf_fields')); ?>" required>
             <br>
             <div class="selected-acf-fields">
                 <?php
@@ -173,6 +174,17 @@ function filtre_acf_page()
                 }
                 ?>
             </div>
+
+            <label for="cat_value">Entrer la catégorie dans laquelle vous voulez filter:</label>
+            <input type="text" id="cat_value" name="cat_value" value="<?php echo esc_attr(get_option('cat_value')); ?>" required>
+
+            <div class="selected-category">
+                <ul>
+                    <li class="selected-category-li"><?= esc_html($cat_value) ?></li>
+                </ul>
+            </div>
+            <br>
+
             <input type="submit" id="save-settings-button" name="save_settings" class="button button-primary" value="Save Settings">
         </form>
     </div>
@@ -197,9 +209,26 @@ function save_acf_fields()
     wp_die();
 }
 
+add_action('wp_ajax_save_cat_value', 'save_cat_value');
+
+function save_cat_value()
+{
+    $response = array('success' => false);
+
+    if (isset($_POST['cat_value'])) {
+        $cat_value = sanitize_text_field($_POST['cat_value']);
+        update_option('cat_value', $cat_value);
+        $response['success'] = true;
+    } else {
+        $response['error'] = 'ACF fields sont invalide';
+    }
+
+    echo json_encode($response);
+    wp_die();
+}
+
+
 add_action('wp_ajax_get_acf_fields', 'get_acf_fields');
-
-
 
 function get_acf_field_name()
 {
