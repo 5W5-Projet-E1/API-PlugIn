@@ -14,7 +14,7 @@
  * un point de terminaison d'API REST personnalisé.
  */
 
-function filtre_cours_endpoint($request)
+function filtre_acf_endpoint($request)
 {
     // Chercher les infos liée au page
     $page = $request->get_param('page'); // Chercher la current page number
@@ -101,7 +101,7 @@ function filtre_cours_endpoint($request)
 add_action('rest_api_init', function () {
     register_rest_route('pagecours/', '/class-filter', array(
         'methods' => 'GET',
-        'callback' => 'filtre_cours_endpoint',
+        'callback' => 'filtre_acf_endpoint',
     ));
 });
 
