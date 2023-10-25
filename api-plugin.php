@@ -139,7 +139,7 @@ function enqueue_admin_script()
     $screen = get_current_screen();
 
     // Vérifier si la page est celle du plugin
-    if ($screen->id === 'toplevel_page_rest-plugin') {
+    if ($screen->id === 'toplevel_page_filtre-acf') {
         wp_enqueue_script(
             'admin-script',
             plugin_dir_url(__FILE__) . 'js/admin.js',
@@ -152,7 +152,7 @@ function enqueue_admin_script()
 add_action('admin_enqueue_scripts', 'enqueue_admin_script');
 
 
-function rest_plugin_page()
+function filtre_acf_page()
 {
     // Chercher les ACF fields par l'utilisateur du plugin dans la table option
     $acf_fields = get_option('acf_fields');
@@ -221,7 +221,7 @@ add_action('wp_ajax_nopriv_get_acf_field_name', 'get_acf_field_name');
  */
 function register_plugin_menu()
 {
-    add_menu_page('REST PLUGIN', 'REST PLUGIN', 'manage_options', 'rest-plugin', 'rest_plugin_page');
+    add_menu_page('Filtre ACF', 'Filtre ACF', 'manage_options', 'filtre-acf', 'filtre_acf_page');
 }
 
 add_action('admin_menu', 'register_plugin_menu');
