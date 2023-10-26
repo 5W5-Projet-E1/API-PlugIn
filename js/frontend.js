@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const nextPageButton = document.querySelector('.next-page');
     const prevPageButton = document.querySelector('.prev-page');
 
+    console.log('bvndjiasbvoabsdvoibaosvb');
 
     let acfFieldsArray = [];
     let slugCatOption = '';

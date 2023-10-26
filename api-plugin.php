@@ -26,7 +26,7 @@ function filtre_acf_endpoint($request)
     // Set des valeurs par défauts pour $page
     $page = isset($page) ? $page : 1;
     // Set le nombre de posts per page ** Devrait être set dynamique par le plugin user
-    $posts_per_page = isset($posts_per_page) ? $posts_per_page : 5; 
+    $posts_per_page = isset($posts_per_page) ? $posts_per_page : 5;
 
     $cat_option = get_option('cat_value');
     // Définir les args pour la WP_query
@@ -101,7 +101,7 @@ function filtre_acf_endpoint($request)
 // Enregistrer le point de terminaison REST (endpoint)
 add_action('rest_api_init', function () {
     $cat_option = get_option('cat_value');
-    register_rest_route( $cat_option . '/', '/filtre-acf', array(
+    register_rest_route($cat_option . '/', '/filtre-acf', array(
         'methods' => 'GET',
         'callback' => 'filtre_acf_endpoint',
     ));
@@ -110,8 +110,10 @@ add_action('rest_api_init', function () {
 // Enqueue le CSS et le JavaScript
 function enqueue_mes_assets()
 {
+    $page_value = get_option('page_value');
+
     // Assurez-vous que la page actuelle est 'cours' avant d'enregistrer les assets
-    if (is_page('cours')) {
+    if (is_page($page_value)) {
         // CSS
         wp_enqueue_style(
             'plugin-style',
@@ -160,17 +162,41 @@ function filtre_acf_page()
     $acf_fields = get_option('acf_fields');
     $acf_fields_array = explode(',', $acf_fields);
     $cat_value = get_option('cat_value');
-    var_dump($cat_value);
-    
+    $page_value = get_option('page_value');
+    // var_dump($cat_value);
+
 
 ?>
     <div class="wrap">
         <h2>Paramètre</h2>
         <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" id="param-form">
+
+            <div class="selected-page">
+                <h2>La page dans laquelle vous voulez filtrer</h2>
+
+                <label for="page_value">Entrer la page dans laquelle vous voulez filtrer:</label>
+                <input type="text" id="page_value" name="page_value" value="<?php echo esc_attr(get_option('page_value')); ?>" required>
+
+                <ul>
+                    <li class="selected-page-li"><?= esc_html($page_value) ?></li>
+                </ul>
+            </div>
+
+            <div class="selected-category">
+                <h2>Le slug de la catégorie que vous voulez filtrer</h2>
+
+                <label for="cat_value">Entrer le slug de la catégorie:</label>
+                <input type="text" id="cat_value" name="cat_value" value="<?php echo esc_attr(get_option('cat_value')); ?>" required>
+
+                <ul>
+                    <li class="selected-category-li"><?= esc_html($cat_value) ?></li>
+                </ul>
+            </div>
+
             <h2>Les ACF fields que vous filtrer</h2>
             <label for="acf_fields">Entrer les ACF fields que vous voulez utiliser pour filtrer (séparé par des virgules ","):</label>
             <input type="text" id="acf_fields" name="acf_fields" value="<?php echo esc_attr(get_option('acf_fields')); ?>" required>
-            
+
             <div class="selected-acf-fields">
                 <?php
                 // Display les ACF fields que l'admin à déterminé
@@ -180,38 +206,30 @@ function filtre_acf_page()
                 ?>
             </div>
 
-            <div class="selected-category">
-            <h2>Le slug de la catégorie que vous voulez filtrer</h2>
-            
-            <label for="cat_value">Entrer le slug de la catégorie:</label>
-            <input type="text" id="cat_value" name="cat_value" value="<?php echo esc_attr(get_option('cat_value')); ?>" required>
-
-                <ul>
-                    <li class="selected-category-li"><?= esc_html($cat_value) ?></li>
-                </ul>
-            </div>
             <br>
 
-            <input type="submit" id="save-settings-button" name="save_settings" class="button button-primary" value="Save Settings">
+            <input type="submit" id="save-settings-button" name="save_settings" class="button button-primary" value="Sauvegarder">
         </form>
     </div>
 <?php
 }
 
 // AJAX action pour sauvegarder les ACF fields et la category values
-add_action('wp_ajax_save_acf_and_cat_values', 'save_acf_and_cat_values');
+add_action('wp_ajax_save_user_input', 'save_user_input');
 
-function save_acf_and_cat_values()
+function save_user_input()
 {
     $response = array('success' => false);
 
-    if (isset($_POST['acf_fields']) && isset($_POST['cat_value'])) {
+    if (isset($_POST['acf_fields']) && isset($_POST['cat_value']) && isset($_POST['page_value'])) {
         $acf_fields = sanitize_text_field($_POST['acf_fields']);
         $cat_value = sanitize_text_field($_POST['cat_value']);
-        
+        $page_value = sanitize_text_field($_POST['page_value']);
+
         update_option('acf_fields', $acf_fields);
         update_option('cat_value', $cat_value);
-        
+        update_option('page_value', $page_value);
+
         $response['success'] = true;
     } else {
         $response['error'] = 'Invalid data';
@@ -222,22 +240,15 @@ function save_acf_and_cat_values()
 }
 
 
-/**
- * PEUT ETRE PAS NECESSAIRE
- * 
- * 
- * 
- * 
- * 
- * 
- */
 add_action('wp_ajax_get_acf_fields', 'get_acf_fields');
 function get_acf_field_name()
 {
     $acf_field_name = get_option('acf_fields');
     $cat_option = get_option('cat_value');
+    $page_option = get_option('page_value');
 
     $response = array(
+        'page_option' => $page_option,
         'cat_option' => $cat_option,
         'acf_field_name' => $acf_field_name,
     );
