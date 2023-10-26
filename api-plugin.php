@@ -166,7 +166,7 @@ function filtre_acf_page()
 ?>
     <div class="wrap">
         <h2>Paramètre</h2>
-        <form method="post" action="" id="param-form">
+        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" id="param-form">
             <h2>Les ACF fields que vous filtrer</h2>
             <label for="acf_fields">Entrer les ACF fields que vous voulez utiliser pour filtrer (séparé par des virgules ","):</label>
             <input type="text" id="acf_fields" name="acf_fields" value="<?php echo esc_attr(get_option('acf_fields')); ?>" required>
@@ -198,52 +198,40 @@ function filtre_acf_page()
 <?php
 }
 
-add_action('wp_ajax_save_acf_fields', 'save_acf_fields');
+// AJAX action pour sauvegarder les ACF fields et la category values
+add_action('wp_ajax_save_acf_and_cat_values', 'save_acf_and_cat_values');
 
-function save_acf_fields()
+function save_acf_and_cat_values()
 {
     $response = array('success' => false);
 
-    if (isset($_POST['acf_fields'])) {
+    if (isset($_POST['acf_fields']) && isset($_POST['cat_value'])) {
         $acf_fields = sanitize_text_field($_POST['acf_fields']);
-        update_option('acf_fields', $acf_fields);
-        $response['success'] = true;
-    } else {
-        $response['error'] = 'ACF fields sont invalide';
-    }
-
-    echo json_encode($response);
-    wp_die();
-}
-
-add_action('wp_ajax_save_cat_value', 'save_cat_value');
-
-function save_cat_value()
-{
-    $response = array('success' => false);
-
-    if (isset($_POST['cat_value'])) {
         $cat_value = sanitize_text_field($_POST['cat_value']);
+        
+        update_option('acf_fields', $acf_fields);
         update_option('cat_value', $cat_value);
+        
         $response['success'] = true;
     } else {
-        $response['error'] = 'ACF fields sont invalide';
+        $response['error'] = 'Invalid data';
     }
 
     echo json_encode($response);
     wp_die();
 }
+
 
 /**
  * PEUT ETRE PAS NECESSAIRE
- * add_action('wp_ajax_get_acf_fields', 'get_acf_fields');
+ * 
  * 
  * 
  * 
  * 
  * 
  */
-
+add_action('wp_ajax_get_acf_fields', 'get_acf_fields');
 function get_acf_field_name()
 {
     $acf_field_name = get_option('acf_fields');

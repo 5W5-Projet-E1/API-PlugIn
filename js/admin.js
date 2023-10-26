@@ -28,9 +28,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Combine les informations que l'utilisateur à input
         const data = new FormData(paramForm);
-        data.append('action', 'save_acf_fields');
+        data.append('action', 'save_acf_and_cat_values');
         data.append('acf_fields', acfFields);
-        data.append('action', 'save_cat_value');
         data.append('cat_value', categoryValue);
 
         //Faire un requête pour envoyer l'info à la DB
