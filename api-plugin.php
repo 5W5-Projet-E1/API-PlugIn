@@ -26,12 +26,13 @@ function filtre_acf_endpoint($request)
     // Set des valeurs par défauts pour $page
     $page = isset($page) ? $page : 1;
     // Set le nombre de posts per page ** Devrait être set dynamique par le plugin user
-    $posts_per_page = isset($posts_per_page) ? $posts_per_page : 5;
+    $posts_per_page = isset($posts_per_page) ? $posts_per_page : 5; 
 
+    $cat_option = get_option('cat_value');
     // Définir les args pour la WP_query
     $args = array(
         // Slug de la categorie dans laquelle on veut filtrer ** Devrait être set dynamique par le plugin user
-        'category_name' => 'pagecours',
+        'category_name' => $cat_option,
         'posts_per_page' => $posts_per_page, // Retrieve all posts
         'paged' => $page, // Set the current page
     );
@@ -99,7 +100,8 @@ function filtre_acf_endpoint($request)
 
 // Enregistrer le point de terminaison REST (endpoint)
 add_action('rest_api_init', function () {
-    register_rest_route('pagecours/', '/class-filter', array(
+    $cat_option = get_option('cat_value');
+    register_rest_route( $cat_option . '/', '/filtre-acf', array(
         'methods' => 'GET',
         'callback' => 'filtre_acf_endpoint',
     ));
@@ -158,6 +160,8 @@ function filtre_acf_page()
     $acf_fields = get_option('acf_fields');
     $acf_fields_array = explode(',', $acf_fields);
     $cat_value = get_option('cat_value');
+    var_dump($cat_value);
+    
 
 ?>
     <div class="wrap">
@@ -230,14 +234,23 @@ function save_cat_value()
     wp_die();
 }
 
-
-add_action('wp_ajax_get_acf_fields', 'get_acf_fields');
+/**
+ * PEUT ETRE PAS NECESSAIRE
+ * add_action('wp_ajax_get_acf_fields', 'get_acf_fields');
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
 
 function get_acf_field_name()
 {
     $acf_field_name = get_option('acf_fields');
+    $cat_option = get_option('cat_value');
 
     $response = array(
+        'cat_option' => $cat_option,
         'acf_field_name' => $acf_field_name,
     );
 

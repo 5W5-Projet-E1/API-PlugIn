@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         selectedCategoryLi.innerHTML = categoryValueString;
 
                         console.log('Vos ACF fields on été sauvegardé:', acfFieldsString);
+                        console.log('Vos ACF fields on été sauvegardé:', categoryValueString);
                     }
                     else {
                         // Handle the case when acfFieldsString is empty

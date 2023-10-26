@@ -7,9 +7,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     let acfFieldsArray = [];
+    let slugCatOption = '';
 
     // Faire une requête AJAX  pour récuperer le nom des ACF fields
-    fetch(customData.ajax_url, {
+    const fetchData = fetch(customData.ajax_url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -21,6 +22,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // Set le nom des ACF field dans la variable "acfFields"
             acfFields = data.acf_field_name;
             acfFieldsArray = acfFields.split(','); // Diviser le string en une array
+
+            slugCatOption = data.cat_option
+
+          
         })
         .catch(error => {
             console.error('Erreur lors du fetching des ACF field name:', error);
@@ -29,6 +34,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // Function pour chercher tout les posts
+
+    fetchData.then(() => {
+        // Now that slugCatOption is set, you can proceed with the rest of your code.
+        // Call loadToutLesPosts or any other functions that depend on slugCatOption here.
+        loadToutLesPosts();
+    });
+
     function loadToutLesPosts() {
         acfFields = [];
         currentPage = 1;
@@ -107,7 +119,8 @@ document.addEventListener('DOMContentLoaded', function () {
         queryParams.append('acf_fields', formattedACFFields);// Ajouter les ACF fields formtatés au param de la query
         queryParams.append('page', page);// Ajouter le param page au param de la query
         // Construire l'URL avec les nouveaus query parameters
-        const url = `http://localhost/weee1/wp-json/pagecours/class-filter?${queryParams.toString()}`;
+        const url = `http://localhost/weee1/wp-json/${slugCatOption}/filtre-acf?${queryParams.toString()}`;
+        console.log(url);
         return url;
     }
 
@@ -147,6 +160,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
         classContent.innerHTML = content;
     }
-    //On load tout les posts au début
-    loadToutLesPosts();
+
 });
