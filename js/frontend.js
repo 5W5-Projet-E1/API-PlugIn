@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const acfFieldButtons = document.querySelectorAll('.acf-field-button');
     const touteButton = document.getElementById('toute-button');
-    const classContent = document.getElementById('cours-content');
+    const leContenue = document.getElementById('le-content');
     const nextPageButton = document.querySelector('.next-page');
     const prevPageButton = document.querySelector('.prev-page');
 
@@ -149,17 +149,17 @@ document.addEventListener('DOMContentLoaded', function () {
         let content = '';
 
         if (data.posts.length > 0) {
-            data.posts.forEach((classInfo) => {
+            data.posts.forEach((info) => {
                 content += '<li class="">';
-                content += `<h2>${classInfo.title}</h2>`;
-                content += `<p>${classInfo.content}</p>`;
+                content += `<h2>${info.title}</h2>`;
+                content += `<p>${info.content}</p>`;
                 content += '</li>';
             });
         } else {
             content = '<p>Aucun cours pour cette option n\'est disponible</p>';
         }
 
-        classContent.innerHTML = content;
+        leContenue.innerHTML = content;
     }
 
 });

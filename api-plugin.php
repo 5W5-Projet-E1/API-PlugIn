@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Plugin name: Plugin REST API
+ * Plugin name: Filtre ACF 
  * Author: Osama Madi
  * Author URI: https://github.com/osamagmm
- * Description: Plugin pour utiliser le point de terminaison de l'API REST personnalisé créé à l'aide de cette fonction vous permet d'interroger et de filtrer les publications dans une catégorie spécifique en fonction de divers paramètres à l'aide de champs ACF (Advance Customs Fields), ce qui le rend utile pour créer des requêtes de contenu personnalisées sur votre site WordPress.
+ * Description: Plugin pour utiliser le point de terminaison de l'API REST personnalisé permet de filtrer les publications dans une catégorie spécifique en fonction de divers paramètres à l'aide de champs ACF (Advance Customs Fields), ce qui le rend utile pour créer des requêtes de contenu personnalisées sur votre site WordPress. Ce plugin gère aussi la pagination de vôtre site en spécifiant les paramètres de votre choix.
  * Version: 1.0.0
  */
 
@@ -168,7 +168,8 @@ function filtre_acf_page()
 
 ?>
     <div class="wrap">
-        <h2>Paramètre</h2>
+        <h1>Filtre ACF</h1>
+        <h2>Réglage</h2>
         <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" id="param-form">
 
             <div class="selected-page">
